@@ -2,10 +2,10 @@
 
 ```mermaid
 erDiagram
-  USERS ||--o{ ALLOWANCE_PERIODS : sets
+  STUDENTS ||--o{ ALLOWANCE_PERIODS : sets
   ALLOWANCE_PERIODS ||--o{ EXPENSES : contains
-  ALLOWANCE_PERIODS ||--o{ ALERTS : triggers
-  USERS {
+  ALLOWANCE_PERIODS ||--o{ PACE_ALERTS : triggers
+  STUDENTS {
     uuid id PK
     text name "PII"
     text email "PII"
@@ -14,28 +14,27 @@ erDiagram
   }
   ALLOWANCE_PERIODS {
     uuid id PK
-    uuid user_id FK
-    numeric amount "personal financial data"
+    uuid student_id FK
+    decimal amount "personal financial data"
     text period_type "WEEKLY or MONTHLY"
     date start_date
     date end_date
-    text status "SCHEDULED, ACTIVE or CLOSED"
+    text status "ACTIVE or CLOSED"
   }
   EXPENSES {
     uuid id PK
     uuid period_id FK
-    numeric amount "personal financial data"
+    decimal amount "personal financial data"
     text note "may contain personal info"
     timestamp spent_at
     timestamp created_at
   }
-  ALERTS {
+  PACE_ALERTS {
     uuid id PK
     uuid period_id FK
     text message
-    text status "PENDING, SENT or FAILED"
+    text status "UNREAD or DISMISSED"
     timestamp created_at
-    timestamp sent_at
   }
 ```
 
@@ -50,6 +49,9 @@ erDiagram
 
 ## Notes
 
+- **Audience / risk:** developers and whoever protects the data; it reduces the risk of a wrong schema and of leaking personal data.
 - Derived from `class.md`: one table per stored class. The three enumerations are stored as text columns with the same values.
-- The 1-to-many multiplicities in the class diagram become the foreign keys `user_id` and `period_id`.
-- Draft: finalized with the database schema in Week 9.
+- The 1-to-many multiplicities in the class diagram become the foreign keys `student_id` and `period_id`.
+- Remaining balance is not stored; it is calculated from `amount` and the expenses.
+- The ERD uses snake_case and the class diagram uses camelCase. This is a naming convention, not a mismatch.
+- Draft: finalized with the database schema later.
