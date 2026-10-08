@@ -2,8 +2,8 @@
 
 ```mermaid
 flowchart TB
-  subgraph APP["«package» app (routes)"]
-    P1["«package» (student) pages"]
+  subgraph APP["«package» app"]
+    P1["«package» pages"]
     P2["«package» api route handlers"]
   end
   P3["«package» components"]
@@ -11,15 +11,15 @@ flowchart TB
     P4["«package» api-client"]
     P5["«package» domain"]
     P6["«package» db"]
-    P7["«package» notifications"]
   end
   P1 -. "«import»" .-> P3
   P1 -. "«import»" .-> P4
   P4 -. "calls over HTTP [JSON]" .-> P2
   P2 -. "«import»" .-> P5
   P5 -. "«import»" .-> P6
-  P5 -. "«import»" .-> P7
 ```
+
+**Layering rule:** pages never import `lib/db`; only `lib/domain` does, and pages reach the server only through `lib/api-client` and the API route handlers.
 
 ## Key
 
@@ -29,11 +29,8 @@ flowchart TB
 | Frame around boxes | A parent package containing sub-packages |
 | Dashed arrow «import» | The source package uses the target package |
 
-## Layering rule
-
-Pages never import `lib/db` or `lib/notifications`; only `lib/domain` does, and pages reach the server only through `lib/api-client` and the API route handlers.
-
 ## Notes
 
-- This matches the container diagram: the web pages call the API over HTTP and do not touch the database.
-- Components map to folders: Expense Service, Pace Calculator and Auth Guard live in `lib/domain`; Budget Repository in `lib/db`; Notification Adapter in `lib/notifications`.
+- **Audience / risk:** developers; it reduces the risk of tangled code and of pages touching the database.
+- This matches `containers.md`: the Web Application calls the API Application over HTTP and does not touch the database.
+- `lib/domain` holds the Expense Service, Allowance Service, Pace Calculator and Auth Guard from `components.md`. `lib/db` holds the Budget Repository.
