@@ -3,38 +3,36 @@
 ```mermaid
 classDiagram
   direction LR
-  class User {
-    +id: string
-    +name: string
-    +email: string
-    -passwordHash: string
-    +createdAt: DateTime
-    +login() bool
+  class Student {
+    +String id
+    +String name
+    +String email
+    -String passwordHash
+    +DateTime createdAt
   }
   class AllowancePeriod {
-    +id: string
-    +amount: number
-    +periodType: PeriodType
-    +startDate: Date
-    +endDate: Date
-    +status: PeriodStatus
-    +remainingBalance() number
-    +isAheadOfPace() bool
-    +close()
+    +String id
+    +Decimal amount
+    +PeriodType periodType
+    +Date startDate
+    +Date endDate
+    +PeriodStatus status
+    +remainingBalance() Decimal
+    +isAheadOfPace() Boolean
+    +close() void
   }
   class Expense {
-    +id: string
-    +amount: number
-    +note: string
-    +spentAt: DateTime
-    +createdAt: DateTime
+    +String id
+    +Decimal amount
+    +String note
+    +DateTime spentAt
+    +DateTime createdAt
   }
-  class Alert {
-    +id: string
-    +message: string
-    +status: AlertStatus
-    +createdAt: DateTime
-    +sentAt: DateTime
+  class PaceAlert {
+    +String id
+    +String message
+    +AlertStatus status
+    +DateTime createdAt
   }
   class PeriodType {
     <<enumeration>>
@@ -43,22 +41,20 @@ classDiagram
   }
   class PeriodStatus {
     <<enumeration>>
-    SCHEDULED
     ACTIVE
     CLOSED
   }
   class AlertStatus {
     <<enumeration>>
-    PENDING
-    SENT
-    FAILED
+    UNREAD
+    DISMISSED
   }
-  User "1" --> "0..*" AllowancePeriod : sets
+  Student "1" --> "0..*" AllowancePeriod : sets
   AllowancePeriod "1" *-- "0..*" Expense : contains
-  AllowancePeriod "1" --> "0..*" Alert : triggers
+  AllowancePeriod "1" --> "0..*" PaceAlert : triggers
   AllowancePeriod ..> PeriodType : uses
   AllowancePeriod ..> PeriodStatus : uses
-  Alert ..> AlertStatus : uses
+  PaceAlert ..> AlertStatus : uses
 ```
 
 ## Key
@@ -73,6 +69,10 @@ classDiagram
 
 ## Notes
 
-- `PeriodStatus` values match the state machine in `state-machine.md`.
-- `createdAt` on every logged purchase supports the activation, retention and under-5-seconds metrics from the Lean Canvas.
+- **Audience / risk:** developers; it reduces the risk of a wrong data model.
+- Classes come from the nouns in the MVP: student, allowance, purchase, balance and alert.
+- `PeriodType` WEEKLY and MONTHLY come from "weekly/monthly allowance". There are no categories, matching "no complex categories".
+- `PeriodStatus` values match `state-machine.md` exactly.
+- Remaining balance is calculated (`remainingBalance()`), not stored.
+- `PaceAlert` is stored so alerts can be shown in the app and marked as read. Team decision: confirm this is wanted.
 - `passwordHash` is private and never leaves the server.
